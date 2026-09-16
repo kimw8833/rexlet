@@ -1,4 +1,4 @@
-# Rexlet
+# Rexlet 🦖
 
 Rexlet is a personal data hub for turning fragmented everyday data into reliable, structured, and useful information.
 
