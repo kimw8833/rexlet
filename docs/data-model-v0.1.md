@@ -258,7 +258,7 @@ A transaction does not need to be fully classified immediately.
 
 For example:
 
-* Merchant may be unknown.
+* A valid Transaction may not yet be mapped to a normalized Merchant.
 * Category may be known while Subcategory remains empty.
 * Tags are always optional.
 

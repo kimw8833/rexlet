@@ -17,7 +17,7 @@ The dataset includes examples such as:
 * Merchant descriptions that require normalization
 * Expenses
 * Income
-* Unknown merchants
+* Source descriptions that do not yet map to a normalized merchant
 * Different future classification use cases
 
 ### `transactions_invalid.csv`
