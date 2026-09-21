@@ -1,0 +1,108 @@
+from datetime import date
+from decimal import Decimal
+
+import pytest
+from pydantic import ValidationError
+
+from rexlet.transactions import TransactionInput
+
+
+def test_valid_transaction_is_parsed():
+    transaction = TransactionInput.model_validate(
+        {
+            "Date": "2026-09-01",
+            "Description": "MAX STHLM 018392",
+            "Amount": "-149.00",
+            "Currency": "SEK",
+        }
+    )
+
+    assert transaction.transaction_date == date(2026, 9, 1)
+    assert transaction.raw_description == "MAX STHLM 018392"
+    assert transaction.amount == Decimal("-149.00")
+    assert transaction.currency == "SEK"
+
+# missing date
+def test_missing_date_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Description": "MAX STHLM 018392",
+                "Amount": "-149.00",
+                "Currency": "SEK",
+            }
+        )
+
+# invalid amount
+def test_invalid_amount_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-09-02",
+                "Description": "ICA KVANTUM UPPSALA",
+                "Amount": "not-a-number",
+                "Currency": "SEK",
+            }
+        )
+
+# empty Description
+def test_empty_description_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-09-03",
+                "Description": "",
+                "Amount": "-119.00",
+                "Currency": "SEK",
+            }
+        )
+
+# empty Currency
+def test_empty_currency_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-09-04",
+                "Description": "VATTENFALL AB",
+                "Amount": "-840.00",
+                "Currency": "",
+            }
+        )
+
+# lower/upper case currency
+def test_currency_is_normalized_to_uppercase():
+    transaction = TransactionInput.model_validate(
+        {
+            "Date": "2026-09-05",
+            "Description": "SL ACCESS",
+            "Amount": "-970.00",
+            "Currency": "sek",
+        }
+    )
+
+    assert transaction.currency == "SEK"
+
+# UNKNOWN shop name
+def test_transaction_without_known_merchant_is_valid():
+    transaction = TransactionInput.model_validate(
+        {
+            "Date": "2026-09-07",
+            "Description": "UNKNOWN SHOP 48291",
+            "Amount": "-87.50",
+            "Currency": "SEK",
+        }
+    )
+
+    assert transaction.raw_description == "UNKNOWN SHOP 48291"
+
+# invalid date
+def test_invalid_calendar_date_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-13-40",
+                "Description": "MAX STHLM 018392",
+                "Amount": "-149.00",
+                "Currency": "SEK",
+            }
+        )
