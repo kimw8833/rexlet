@@ -1,5 +1,7 @@
+import csv
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -106,3 +108,34 @@ def test_invalid_calendar_date_fails_validation():
                 "Currency": "SEK",
             }
         )
+
+# CSV Positive test data   → accepted
+def test_valid_sample_csv_records_pass_validation():
+    csv_path = Path("data/sample/transactions.csv")
+
+    with csv_path.open(newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        transactions = [
+            TransactionInput.model_validate(row)
+            for row in reader
+        ]
+
+    assert len(transactions) == 8
+
+# CSV Negative test data   → rejected
+def test_invalid_sample_csv_records_fail_validation():
+    csv_path = Path("data/sample/transactions_invalid.csv")
+
+    invalid_count = 0
+
+    with csv_path.open(newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        for row in reader:
+            try:
+                TransactionInput.model_validate(row)
+            except ValidationError:
+                invalid_count += 1
+
+    assert invalid_count == 4
