@@ -14,3 +14,4 @@ class TransactionInput(BaseModel):
     @classmethod
     def normalize_currency(cls, value: str) -> str:
         return value.upper()
+    

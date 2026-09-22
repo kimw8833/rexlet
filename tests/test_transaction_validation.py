@@ -164,3 +164,4 @@ def test_invalid_sample_csv_records_fail_validation():
                 invalid_count += 1
 
     assert invalid_count == 4
+    
