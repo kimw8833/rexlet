@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from rexlet.transactions import TransactionInput
 
 
+# Valid transaction
 def test_valid_transaction_is_parsed():
     transaction = TransactionInput.model_validate(
         {
@@ -24,7 +25,7 @@ def test_valid_transaction_is_parsed():
     assert transaction.amount == Decimal("-149.00")
     assert transaction.currency == "SEK"
 
-# missing date
+# Missing Date
 def test_missing_date_fails_validation():
     with pytest.raises(ValidationError):
         TransactionInput.model_validate(
@@ -35,7 +36,19 @@ def test_missing_date_fails_validation():
             }
         )
 
-# invalid amount
+# Invalid date
+def test_invalid_calendar_date_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-13-40",
+                "Description": "MAX STHLM 018392",
+                "Amount": "-149.00",
+                "Currency": "SEK",
+            }
+        )
+
+# Invalid amount
 def test_invalid_amount_fails_validation():
     with pytest.raises(ValidationError):
         TransactionInput.model_validate(
@@ -47,7 +60,18 @@ def test_invalid_amount_fails_validation():
             }
         )
 
-# empty Description
+# Missing Description
+def test_missing_description_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-09-03",
+                "Amount": "-119.00",
+                "Currency": "SEK",
+            }
+        )
+
+# Empty Description
 def test_empty_description_fails_validation():
     with pytest.raises(ValidationError):
         TransactionInput.model_validate(
@@ -59,7 +83,18 @@ def test_empty_description_fails_validation():
             }
         )
 
-# empty Currency
+# Missing Currency
+def test_missing_currency_fails_validation():
+    with pytest.raises(ValidationError):
+        TransactionInput.model_validate(
+            {
+                "Date": "2026-09-04",
+                "Description": "VATTENFALL AB",
+                "Amount": "-840.00",
+            }
+        )
+
+# Empty Currency
 def test_empty_currency_fails_validation():
     with pytest.raises(ValidationError):
         TransactionInput.model_validate(
@@ -71,7 +106,7 @@ def test_empty_currency_fails_validation():
             }
         )
 
-# lower/upper case currency
+# Currency normalization
 def test_currency_is_normalized_to_uppercase():
     transaction = TransactionInput.model_validate(
         {
@@ -84,7 +119,7 @@ def test_currency_is_normalized_to_uppercase():
 
     assert transaction.currency == "SEK"
 
-# UNKNOWN shop name
+# Unknown merchant description
 def test_transaction_without_known_merchant_is_valid():
     transaction = TransactionInput.model_validate(
         {
@@ -97,19 +132,9 @@ def test_transaction_without_known_merchant_is_valid():
 
     assert transaction.raw_description == "UNKNOWN SHOP 48291"
 
-# invalid date
-def test_invalid_calendar_date_fails_validation():
-    with pytest.raises(ValidationError):
-        TransactionInput.model_validate(
-            {
-                "Date": "2026-13-40",
-                "Description": "MAX STHLM 018392",
-                "Amount": "-149.00",
-                "Currency": "SEK",
-            }
-        )
 
-# CSV Positive test data   → accepted
+
+# Valid sample CSV - CSV Positive test data - accepted
 def test_valid_sample_csv_records_pass_validation():
     csv_path = Path("data/sample/transactions.csv")
 
@@ -123,7 +148,7 @@ def test_valid_sample_csv_records_pass_validation():
 
     assert len(transactions) == 8
 
-# CSV Negative test data   → rejected
+# Invalid sample CSV - CSV Negative test data - rejected
 def test_invalid_sample_csv_records_fail_validation():
     csv_path = Path("data/sample/transactions_invalid.csv")
 
