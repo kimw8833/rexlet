@@ -8,4 +8,4 @@ The first module is **Rexlet Money**, focused on building a reliable foundation 
 
 ## Status
 
-Early planning and design phase.
+Early development. Rexlet Money v0.1 is currently focused on transaction ingestion, validation, and establishing a reliable financial data foundation.
