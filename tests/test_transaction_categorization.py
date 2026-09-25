@@ -9,6 +9,7 @@ def test_max_burgers_is_categorized_as_restaurant():
         "subcategory": "Restaurants",
     }
 
+
 def test_ica_is_categorized_as_groceries():
     result = categorize_transaction("ICA")
 
@@ -16,6 +17,7 @@ def test_ica_is_categorized_as_groceries():
         "category": "Food",
         "subcategory": "Groceries",
     }
+
 
 def test_spotify_is_categorized_as_streaming():
     result = categorize_transaction("Spotify")
@@ -25,6 +27,7 @@ def test_spotify_is_categorized_as_streaming():
         "subcategory": "Streaming",
     }
 
+
 def test_vattenfall_is_categorized_as_electricity():
     result = categorize_transaction("Vattenfall")
 
@@ -32,6 +35,7 @@ def test_vattenfall_is_categorized_as_electricity():
         "category": "Housing",
         "subcategory": "Electricity",
     }
+
 
 def test_unknown_merchant_is_uncategorized():
     result = categorize_transaction("Unknown Shop")
