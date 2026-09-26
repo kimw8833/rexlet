@@ -18,5 +18,14 @@ MERCHANT_CATEGORIES = {
 }
 
 
-def categorize_transaction(merchant):
-    return MERCHANT_CATEGORIES.get(merchant)
+def categorize_transaction(merchant, rules=None):
+    if rules is None:
+        rules = MERCHANT_CATEGORIES
+
+    normalized_merchant = merchant.strip().lower()
+
+    for rule_merchant, category_data in rules.items():
+        if normalized_merchant == rule_merchant.strip().lower():
+            return category_data
+
+    return None

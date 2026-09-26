@@ -41,3 +41,54 @@ def test_unknown_merchant_is_uncategorized():
     result = categorize_transaction("Unknown Shop")
 
     assert result is None
+
+
+def test_categorization_is_case_insensitive():
+    result = categorize_transaction("max burgers")
+
+    assert result == {
+        "category": "Food",
+        "subcategory": "Restaurants",
+    }
+
+
+def test_transaction_can_be_categorized_with_custom_rules():
+    rules = {
+        "Pressbyran": {
+            "category": "Food",
+            "subcategory": "Convenience Store",
+        }
+    }
+
+    result = categorize_transaction("Pressbyran", rules)
+
+    assert result == {
+        "category": "Food",
+        "subcategory": "Convenience Store",
+    }
+
+
+def test_rule_can_have_category_without_subcategory():
+    rules = {
+        "SJ": {
+            "category": "Transport",
+        }
+    }
+
+    result = categorize_transaction("SJ", rules)
+
+    assert result == {
+        "category": "Transport",
+    }
+
+
+def test_unknown_merchant_with_custom_rules_is_uncategorized():
+    rules = {
+        "SJ": {
+            "category": "Transport",
+        }
+    }
+
+    result = categorize_transaction("Unknown Shop", rules)
+
+    assert result is None
