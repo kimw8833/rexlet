@@ -1,0 +1,25 @@
+from rexlet.normalization import normalize_merchant
+from rexlet.categorization import categorize_transaction
+
+
+def enrich_transaction(transaction):
+    raw_description = transaction["description"]
+    description = normalize_merchant(raw_description)
+    category_data = categorize_transaction(description, rules=None)
+
+    if category_data is None:
+        category = None
+        subcategory = None
+    else:
+        category = category_data["category"]
+        subcategory = category_data["subcategory"]
+
+    return {
+        "date": transaction["date"],
+        "description": raw_description,
+        "amount": transaction["amount"],
+        "currency": transaction["currency"],
+        "merchant": description,
+        "category": category,
+        "subcategory": subcategory,
+    }
