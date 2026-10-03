@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from rexlet.models import Transaction, Base
-
+from rexlet.persistence import get_transactions, save_transaction
 
 def test_save_and_read_transaction():
     engine = create_engine("sqlite:///:memory:")
@@ -23,8 +23,8 @@ def test_save_and_read_transaction():
         subcategory="Restaurants",
     )
 
-    session.add(transaction)
-    session.commit()
+    save_transaction(session, transaction)
+    assert transaction.id is not None
 
     saved_transaction = session.query(Transaction).first()
 
@@ -36,6 +36,7 @@ def test_save_and_read_transaction():
     assert saved_transaction.subcategory == "Restaurants"
 
     session.close()
+
 
 def test_save_multiple_transactions():
     engine = create_engine("sqlite:///:memory:")
@@ -69,7 +70,7 @@ def test_save_multiple_transactions():
     session.add(second_transaction)
     session.commit()
 
-    saved_transactions = session.query(Transaction).all()
+    saved_transactions = get_transactions(session)
 
     assert len(saved_transactions) == 2
 
