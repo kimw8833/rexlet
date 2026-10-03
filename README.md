@@ -8,4 +8,4 @@ The first module is **Rexlet Money**, focused on building a reliable foundation 
 
 ## Status
 
-Early development — transaction validation, CSV ingestion, merchant normalization, and basic transaction categorization implemented.
+Early development — transaction ingestion, enrichment, and database persistence implemented.
